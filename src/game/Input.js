@@ -1,49 +1,35 @@
 export class Input {
-  constructor() {
+  constructor(game) {
+    this.game = game;
+    // Detecta se o usuário está em um dispositivo móvel (iOS / Android)
+    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window);
+    
     this.keys = {};
-    this.mouseDelta = { x: 0, y: 0 };
-    this.isPointerLocked = false;
-    this.targetElement = null;
-
-    window.addEventListener('keydown', (e) => (this.keys[e.code] = true));
-    window.addEventListener('keyup', (e) => (this.keys[e.code] = false));
-
-    window.addEventListener('mousemove', (e) => {
-      if (this.isPointerLocked) {
-        this.mouseDelta.x += e.movementX || 0;
-        this.mouseDelta.y += e.movementY || 0;
-      }
-    });
-
-    window.addEventListener('mousedown', (e) => {
-      if (e.button === 0) this.keys['Fire'] = true;
-      if (this.targetElement && !this.isPointerLocked) {
-        this.requestPointerLock(this.targetElement);
-      }
-    });
-
-    window.addEventListener('mouseup', (e) => {
-      if (e.button === 0) this.keys['Fire'] = false;
-    });
+    this.mouse = { x: 0, y: 0, deltaX: 0, deltaY: 0, isLocked: false };
+    
+    this.init();
   }
 
-  requestPointerLock(element) {
-    this.targetElement = element;
-    try {
-      element.requestPointerLock();
-    } catch (err) {
-      console.warn('Pointer lock request failed:', err);
+  init() {
+    window.addEventListener('keydown', (e) => this.keys[e.code] = true);
+    window.addEventListener('keyup', (e) => this.keys[e.code] = false);
+
+    // Só ativa eventos de ponteiro de mouse se NÃO for celular
+    if (!this.isMobile) {
+      document.addEventListener('pointerlockchange', () => {
+        this.mouse.isLocked = document.pointerLockElement === document.body;
+      });
     }
-
-    document.addEventListener('pointerlockchange', () => {
-      this.isPointerLocked = document.pointerLockElement === element;
-    });
   }
 
-  consumeMouseDelta() {
-    const delta = { ...this.mouseDelta };
-    this.mouseDelta.x = 0;
-    this.mouseDelta.y = 0;
-    return delta;
+  requestLock() {
+    // No iPhone/Celular ignora a solicitação para não travar o jogo
+    if (!this.isMobile && document.body.requestPointerLock) {
+      try {
+        document.body.requestPointerLock();
+      } catch (err) {
+        console.warn('Pointer lock não suportado:', err);
+      }
+    }
   }
 }
