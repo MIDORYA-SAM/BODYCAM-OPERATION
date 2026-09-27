@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/BODYCAM-OPERATION/', // Exemplo: '/bodycam-operacao-abismo/'
   root: './',
   publicDir: 'public',
   server: {
