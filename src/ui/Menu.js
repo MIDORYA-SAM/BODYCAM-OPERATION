@@ -2,23 +2,17 @@ export class Menu {
   constructor(game) {
     this.game = game;
     this.container = document.getElementById('menu-overlay');
-    this.startButton = document.getElementById('btn-start');
     
     this.init();
   }
 
   init() {
-    if (this.startButton) {
-      // Usa touchend e click para garantir resposta imediata no celular
-      const handleStart = (e) => {
-        e.preventDefault();
-        this.hide();
-        if (this.game && typeof this.game.start === 'function') {
-          this.game.start();
-        }
-      };
+    // Esconde a interface do menu
+    this.hide();
 
-      this.startButton.addEventListener('click', handleStart);
+    // Inicia o jogo diretamente sem esperar por cliques
+    if (this.game && typeof this.game.start === 'function') {
+      this.game.start();
     }
   }
 
