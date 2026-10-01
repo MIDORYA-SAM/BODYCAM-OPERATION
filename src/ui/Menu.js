@@ -7,17 +7,22 @@ export class Menu {
   }
 
   init() {
-    // Esconde a interface do menu
-    this.hide();
-
-    // Inicia o jogo diretamente sem esperar por cliques
-    if (this.game && typeof this.game.start === 'function') {
-      this.game.start();
+    // Força a remoção visual imediata
+    if (this.container) {
+      this.container.style.display = 'none';
     }
+
+    // Espera 1 segundo para o mundo carregar e arranca o jogo
+    setTimeout(() => {
+      if (this.game && typeof this.game.start === 'function') {
+        this.game.start();
+      }
+    }, 1000);
   }
 
   show() {
-    if (this.container) this.container.style.display = 'flex';
+    // Anula a função show() para o menu nunca mais aparecer
+    if (this.container) this.container.style.display = 'none';
   }
 
   hide() {
